@@ -36,7 +36,7 @@ setup(
     author='Michal Raska',
     author_email='michal.raska@gmail.com',
     description='',
-    install_requires=['up', 'serial_provider_cog'],
+    install_requires=['up', 'serial_cog'],
     cmdclass={
         'install': PostInstallCommand,
         'develop': PostInstallCommand,
