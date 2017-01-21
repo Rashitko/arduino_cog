@@ -1,3 +1,4 @@
+import struct
 from time import sleep
 
 from serial_provider.modules.serial_module import SerialProvider
@@ -5,13 +6,16 @@ from up.base_started_module import BaseStartedModule
 
 
 class ArduinoModule(BaseStartedModule):
+
+    LOAD_ORDER = SerialProvider.LOAD_ORDER + 1
+
     def __init__(self):
         super().__init__()
         self.__serial_module = None
-        self._load_order = 1
+        self._load_order = SerialProvider.LOAD_ORDER
 
     def _execute_initialization(self):
-        self.__serial_module = self.up.get_module(SerialProvider)
+        self.__serial_module = self.up.get_module(SerialProvider.__name__)
         if self.__serial_module is None:
             self.logger.critical('SerialProvider not available')
             raise ValueError('SerialProvider not available')
@@ -29,6 +33,10 @@ class ArduinoModule(BaseStartedModule):
 
     def _execute_stop(self):
         pass
+
+    def send_altitude(self, altitude):
+        data = struct.pack("h", altitude)
+        self.serial_module.send_command(ArduinoCommands.ALTITUDE_COMMAND_TYPE, data)
 
     def __handle_start(self, payload):
         self.logger.info('Arduino started')
@@ -48,3 +56,9 @@ class ArduinoCommands:
     DISARM_COMMAND_TYPE = 'd'
     ARM_COMMAND_TYPE = 'a'
     START_COMMAND_TYPE = 's'
+    ALTITUDE_COMMAND_TYPE = 'h'
+    FLIGHT_MODE_SET_COMMAND_TYPE = 'M'
+    FLIGHT_MODE_GET_COMMAND_TYPE = 'm'
+    LOCATION_COMMAND_TYPE = 'l'
+    ACTUAL_HEADING_COMMAND_TYPE = 'b'
+    REQUIRED_HEADING_COMMAND_TYPE = 'B'

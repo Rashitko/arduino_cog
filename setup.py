@@ -19,7 +19,8 @@ class PostInstallCommand(install):
         with open(path, 'w+') as external_mods_file:
             external_mods['arduino_cog'] = {
                 'modules': [
-                    {'prefix': 'arduino_cog.modules.arduino_module', 'class_name': 'ArduinoModule'}
+                    {'prefix': 'arduino_cog.modules.arduino_module', 'class_name': 'ArduinoModule'},
+                    {'prefix': 'arduino_cog.modules.arduino_altitude_module', 'class_name': 'ArduinoAltitudeModule'}
                 ],
                 'recorders': []
             }
