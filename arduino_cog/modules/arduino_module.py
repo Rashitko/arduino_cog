@@ -3,10 +3,10 @@ from time import sleep
 
 from serial_provider.modules.serial_module import SerialProvider
 from up.base_started_module import BaseStartedModule
+from up.commands.heading_command import HeadingCommand
 
 
 class ArduinoModule(BaseStartedModule):
-
     LOAD_ORDER = SerialProvider.LOAD_ORDER + 1
 
     def __init__(self):
@@ -37,6 +37,14 @@ class ArduinoModule(BaseStartedModule):
     def send_altitude(self, altitude):
         data = struct.pack("h", altitude)
         self.serial_module.send_command(ArduinoCommands.ALTITUDE_COMMAND_TYPE, data)
+
+    def send_heading(self, heading, mode):
+        if mode == HeadingCommand.SET_MODE_REQUIRED:
+            data = struct.pack("!h", round(heading))
+            self.send_arduino_command(ArduinoCommands.REQUIRED_HEADING_COMMAND_TYPE, data)
+        elif mode == HeadingCommand.SET_MODE_ACTUAL:
+            data = struct.pack("!h", round(heading))
+            self.send_arduino_command(ArduinoCommands.ACTUAL_HEADING_COMMAND_TYPE, data)
 
     def __handle_start(self, payload):
         self.logger.info('Arduino started')
