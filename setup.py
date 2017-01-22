@@ -39,7 +39,7 @@ setup(
     author='Michal Raska',
     author_email='michal.raska@gmail.com',
     description='',
-    install_requires=['up', 'serial_cog'],
+    install_requires=['up', 'serial_cog', 'pyyaml'],
     cmdclass={
         'install': PostInstallCommand,
         'develop': PostInstallCommand,
