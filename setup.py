@@ -40,6 +40,9 @@ setup(
     author_email='michal.raska@gmail.com',
     description='',
     install_requires=['up', 'serial_cog', 'pyyaml'],
+    dependecy_links=[
+        'https://github.com/Rashitko/serial_provider_cog/tarball/master'
+    ],
     cmdclass={
         'install': PostInstallCommand,
         'develop': PostInstallCommand,
