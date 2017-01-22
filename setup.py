@@ -39,7 +39,7 @@ setup(
     author='Michal Raska',
     author_email='michal.raska@gmail.com',
     description='',
-    install_requires=['up', 'pyyaml', 'discovery_cog'],
+    install_requires=['up', 'pyyaml'],
     dependency_links=[
         'https://github.com/Rashitko/discovery_cog/tarball/master#egg=discovery_cog-0.1.0'
     ],
