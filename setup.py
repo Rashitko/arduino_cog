@@ -39,9 +39,9 @@ setup(
     author='Michal Raska',
     author_email='michal.raska@gmail.com',
     description='',
-    install_requires=['up', 'pyyaml'],
+    install_requires=['up', 'pyyaml', 'gearman'],
     dependency_links=[
-        'https://github.com/Rashitko/discovery_cog/tarball/master#egg=discovery_cog-0.1.0'
+        'http://github.com/mtai/python-gearman/tarball/master#egg=gearman-2.0.0beta'
     ],
     cmdclass={
         'install': PostInstallCommand,
