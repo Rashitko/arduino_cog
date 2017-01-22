@@ -41,7 +41,7 @@ setup(
     description='',
     install_requires=['up', 'pyyaml'],
     dependency_links=[
-        'git+https://github.com/Rashitko/serial_provider_cog/tarball/master#egg=serial_cog-0.1'
+        'git+https://github.com/Rashitko/discovery_cog/tarball/master#egg=discovery_cog-0.1'
     ],
     cmdclass={
         'install': PostInstallCommand,
