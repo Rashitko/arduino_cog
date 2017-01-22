@@ -39,7 +39,7 @@ setup(
     author='Michal Raska',
     author_email='michal.raska@gmail.com',
     description='',
-    install_requires=['up', 'pyyaml', 'serial_cog'],
+    install_requires=['up', 'pyyaml'],
     dependency_links=[
         'git+https://github.com/Rashitko/serial_provider_cog/tarball/master#egg=serial_cog-0.1'
     ],
