@@ -41,7 +41,7 @@ setup(
     description='',
     install_requires=['up', 'serial_cog', 'pyyaml'],
     dependecy_links=[
-        'git+https://github.com/Rashitko/serial_provider_cog/tarball/master#egg-serial_cog'
+        'git+https://github.com/Rashitko/serial_provider_cog/tarball/master#egg=serial_cog'
     ],
     cmdclass={
         'install': PostInstallCommand,
