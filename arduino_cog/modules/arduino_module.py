@@ -46,6 +46,10 @@ class ArduinoModule(BaseStartedModule):
             data = struct.pack("!h", round(heading))
             self.send_arduino_command(ArduinoCommands.ACTUAL_HEADING_COMMAND_TYPE, data)
 
+    def send_location(self, lat, lon):
+        data = struct.pack("!ff", lat, lon)
+        self.send_arduino_command(ArduinoCommands.LOCATION_COMMAND_TYPE, data)
+
     def __handle_start(self, payload):
         self.logger.info('Arduino started')
 

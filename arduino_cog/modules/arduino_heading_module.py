@@ -1,46 +1,30 @@
-from up.base_started_module import BaseStartedModule
 from up.commands.heading_command import HeadingCommand
-from up.commands.command import BaseCommandHandler
+from up.modules.base_heading_provider import BaseHeadingProvider
 
 from arduino_cog.modules.arduino_module import ArduinoModule
 
 
-class ArduinoHeadingCommandHandler(BaseCommandHandler):
-    def __init__(self, callbacks):
-        super().__init__()
-        self.__callbacks = callbacks
-
-    def run_action(self, command):
-        heading = command.data.get('heading', None)
-        mode = command.data.get('mode', None)
-        if heading:
-            self.__callbacks.new_heading(heading, mode)
-
-
-class ArduinoHeadingModule(BaseStartedModule):
+class ArduinoHeadingModule(BaseHeadingProvider):
     LOAD_ORDER = ArduinoModule.LOAD_ORDER + 1
 
     def __init__(self):
         super().__init__()
         self.__arduino_module = None
-        self.__heading_change_handle = None
 
     def _execute_start(self):
-        super()._execute_start()
         self.__arduino_module = self.up.get_module(ArduinoModule.__name__)
         if self.arduino_module is None:
             self.logger.critical("Arduino Module not found")
             raise ValueError("Arduino Module not found")
-        self.__heading_change_handle = self.up.command_executor.register_command(HeadingCommand.NAME,
-                                                                                  ArduinoHeadingCommandHandler(self))
-        return True
+        return super()._execute_start()
 
-    def _execute_stop(self):
-        super()._execute_stop()
-        self.up.command_executor.unregister_command(HeadingCommand.NAME, self.__heading_change_handle)
+    def _on_actual_heading_changed(self, new_actual_heading):
+        super()._on_actual_heading_changed(new_actual_heading)
+        self.arduino_module.send_heading(new_actual_heading, HeadingCommand.SET_MODE_ACTUAL)
 
-    def new_heading(self, heading, mode):
-        self.arduino_module.send_heading(heading, mode)
+    def _on_required_heading_changed(self, new_required_heading):
+        super()._on_actual_heading_changed(new_required_heading)
+        self.arduino_module.send_heading(new_required_heading, HeadingCommand.SET_MODE_REQUIRED)
 
     @property
     def arduino_module(self) -> ArduinoModule:

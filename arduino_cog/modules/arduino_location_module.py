@@ -1,15 +1,13 @@
-from up.commands.altitude_command import AltitudeCommand
-from up.modules.base_altitude_provider import BaseAltitudeProvider
+from up.modules.base_location_provider import BaseLocationProvider
 
 from arduino_cog.modules.arduino_module import ArduinoModule
 
 
-class ArduinoAltitudeModule(BaseAltitudeProvider):
+class ArduinoLocationModule(BaseLocationProvider):
     LOAD_ORDER = ArduinoModule.LOAD_ORDER + 1
 
     def __init__(self):
         super().__init__()
-        self.__altitude = 0
         self.__arduino_module = None
 
     def _execute_start(self):
@@ -19,10 +17,11 @@ class ArduinoAltitudeModule(BaseAltitudeProvider):
             raise ValueError("Arduino Module not found")
         return super()._execute_start()
 
-    def _on_altitude_changed(self, new_altitude):
-        super()._on_altitude_changed(new_altitude)
-        self.arduino_module.send_altitude(new_altitude)
+    def _on_location_changed(self, lat, lon):
+        super()._on_location_changed(lat, lon)
+        self.arduino_module.send_location(lat, lon)
 
     @property
-    def arduino_module(self):
+    def arduino_module(self) -> ArduinoModule:
         return self.__arduino_module
+

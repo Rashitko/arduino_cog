@@ -21,7 +21,8 @@ class PostInstallCommand(install):
                 'modules': [
                     {'prefix': 'arduino_cog.modules.arduino_module', 'class_name': 'ArduinoModule'},
                     {'prefix': 'arduino_cog.modules.arduino_altitude_module', 'class_name': 'ArduinoAltitudeModule'},
-                    {'prefix': 'arduino_cog.modules.arduino_heading_module', 'class_name': 'ArduinoHeadingModule'}
+                    {'prefix': 'arduino_cog.modules.arduino_heading_module', 'class_name': 'ArduinoHeadingModule'},
+                    {'prefix': 'arduino_cog.modules.arduino_location_module', 'class_name': 'ArduinoLocationModule'}
                 ],
                 'recorders': []
             }
