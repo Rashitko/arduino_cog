@@ -41,7 +41,7 @@ setup(
     description='',
     install_requires=['up', 'pyyaml', 'discovery_cog'],
     dependency_links=[
-        'https://github.com/Rashitko/discovery-cog.git/tarball/master#egg=discovery_cog-0.1.0'
+        'https://github.com/Rashitko/discovery-cog/tarball/master#egg=discovery_cog-0.1.0'
     ],
     cmdclass={
         'install': PostInstallCommand,
