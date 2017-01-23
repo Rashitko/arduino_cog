@@ -16,7 +16,7 @@ class ArduinoHeadingModule(BaseHeadingProvider):
         if self.arduino_module is None:
             self.logger.critical("Arduino Module not found")
             raise ValueError("Arduino Module not found")
-        return super()._execute_start()
+        return self.__arduino_module.started
 
     def _on_actual_heading_changed(self, new_actual_heading):
         super()._on_actual_heading_changed(new_actual_heading)

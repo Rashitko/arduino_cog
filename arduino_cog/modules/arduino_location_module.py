@@ -15,7 +15,7 @@ class ArduinoLocationModule(BaseLocationProvider):
         if self.arduino_module is None:
             self.logger.critical("Arduino Module not found")
             raise ValueError("Arduino Module not found")
-        return super()._execute_start()
+        return self.__arduino_module.started
 
     def _on_location_changed(self, lat, lon):
         super()._on_location_changed(lat, lon)

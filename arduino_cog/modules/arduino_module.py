@@ -26,10 +26,10 @@ class ArduinoModule(BaseStartedModule):
         self.serial_module.add_handler(ArduinoCommands.DISARM_COMMAND_TYPE, self.__handle_arming_changed, 0, False)
 
     def _execute_start(self):
-        self.serial_module.send_command(ArduinoCommands.START_COMMAND_TYPE)
-        self.serial_module.send_command(ArduinoCommands.DISARM_COMMAND_TYPE)
-        sleep(1)
-        return True
+        if self.serial_module.started:
+            self.serial_module.send_command(ArduinoCommands.START_COMMAND_TYPE)
+            self.serial_module.send_command(ArduinoCommands.DISARM_COMMAND_TYPE)
+        return self.serial_module.started
 
     def _execute_stop(self):
         pass
