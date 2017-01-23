@@ -1,7 +1,17 @@
 from up.registrar import UpRegistrar
 
 
+
 class Registrar(UpRegistrar):
+    CONFIG_FILE_NAME = 'arduino.yml'
+    PORT_KEY = 'port'
+    BAUD_RATE_KEY = 'baud_rate'
+
+    CONFIG_TEMPLATE = """\
+port: # Place your port here
+baud_rate: 9600
+"""
+
     def __init__(self):
         super().__init__('arduino_cog')
 
@@ -13,4 +23,5 @@ class Registrar(UpRegistrar):
             self._register_module('ArduinoHeadingModule', 'arduino_cog.modules.arduino_heading_module')
             self._register_module('ArduinoLocationModule', 'arduino_cog.modules.arduino_location_module')
             self._write_external_modules()
+        self._create_config(self.CONFIG_FILE_NAME, self.CONFIG_TEMPLATE)
         return True
