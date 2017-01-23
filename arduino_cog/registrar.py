@@ -1,4 +1,5 @@
 from up.registrar import UpRegistrar
+import serial_cog.registrar
 
 
 
@@ -24,4 +25,5 @@ baud_rate: 9600
             self._register_module('ArduinoLocationModule', 'arduino_cog.modules.arduino_location_module')
             self._write_external_modules()
         self._create_config(self.CONFIG_FILE_NAME, self.CONFIG_TEMPLATE)
-        return True
+        self._print_info('Registering serial_cog:')
+        return serial_cog.registrar.Registrar().register()
