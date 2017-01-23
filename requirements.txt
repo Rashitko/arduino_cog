@@ -1,3 +1,0 @@
-up
-pyyaml
--e git+https://github.com/Rashitko/serial_provider_cog.git
