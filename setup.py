@@ -6,7 +6,7 @@ from setuptools.command.install import install
 
 setup(
     name='arduino_cog',
-    version='0.1.2',
+    version='0.1.3',
     packages=['arduino_cog', 'arduino_cog.modules'],
     url='https://github.com/Rashitko/arduino_cog',
     download_url='https://github.com/Rashitko/arduino_cog/master/tarball/',
@@ -14,5 +14,5 @@ setup(
     author='Michal Raska',
     author_email='michal.raska@gmail.com',
     description='',
-    install_requires=['up', 'pyyaml', 'serial_cog'],
+    install_requires=['up', 'pyyaml', 'serial_cog>=0.1.4'],
 )

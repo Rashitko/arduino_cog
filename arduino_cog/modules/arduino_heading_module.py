@@ -12,6 +12,7 @@ class ArduinoHeadingModule(BaseHeadingProvider):
         self.__arduino_module = None
 
     def _execute_start(self):
+        super()._execute_start()
         self.__arduino_module = self.up.get_module(ArduinoModule.__name__)
         if self.arduino_module is None:
             self.logger.critical("Arduino Module not found")

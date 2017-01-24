@@ -30,6 +30,11 @@ class ArduinoModule(BaseStartedModule):
             self.serial_module.add_handler(ArduinoCommands.START_COMMAND_TYPE, self.__handle_start)
             self.serial_module.add_handler(ArduinoCommands.ARM_COMMAND_TYPE, self.__handle_arming_changed, 0, True)
             self.serial_module.add_handler(ArduinoCommands.DISARM_COMMAND_TYPE, self.__handle_arming_changed, 0, False)
+            self.serial_module.add_handler(ArduinoCommands.ACTUAL_HEADING_COMMAND_TYPE, self.__handle_heading, 2,
+                                           ArduinoCommands.ACTUAL_HEADING_COMMAND_TYPE)
+            self.serial_module.add_handler(ArduinoCommands.REQUIRED_HEADING_COMMAND_TYPE, self.__handle_heading, 2,
+                                           ArduinoCommands.REQUIRED_HEADING_COMMAND_TYPE)
+            self.serial_module.add_handler(ArduinoCommands.LOCATION_COMMAND_TYPE, self.__handle_location, 8)
         else:
             self.logger.ciritcal('Port and baudrate not set, set them in %s' % Registrar.CONFIG_FILE_NAME)
 
@@ -49,14 +54,14 @@ class ArduinoModule(BaseStartedModule):
     def send_heading(self, heading, mode):
         if mode == HeadingCommand.SET_MODE_REQUIRED:
             data = struct.pack("!h", round(heading))
-            self.serial_module.send_arduino_command(ArduinoCommands.REQUIRED_HEADING_COMMAND_TYPE, data)
+            self.serial_module.send_command(ArduinoCommands.REQUIRED_HEADING_COMMAND_TYPE, data)
         elif mode == HeadingCommand.SET_MODE_ACTUAL:
             data = struct.pack("!h", round(heading))
-            self.serial_module.send_arduino_command(ArduinoCommands.ACTUAL_HEADING_COMMAND_TYPE, data)
+            self.serial_module.send_command(ArduinoCommands.ACTUAL_HEADING_COMMAND_TYPE, data)
 
     def send_location(self, lat, lon):
         data = struct.pack("!ff", lat, lon)
-        self.serial_module.send_arduino_command(ArduinoCommands.LOCATION_COMMAND_TYPE, data)
+        self.serial_module.send_command(ArduinoCommands.LOCATION_COMMAND_TYPE, data)
 
     @staticmethod
     def __read_config():
@@ -78,6 +83,21 @@ class ArduinoModule(BaseStartedModule):
             self.logger.warn("Arduino ARMED")
         else:
             self.logger.warn("Arduino DISARMED")
+
+    def __handle_heading(self, payload, mode):
+        heading, = struct.unpack('!h', payload)
+        if mode == ArduinoCommands.ACTUAL_HEADING_COMMAND_TYPE:
+            readable_mode = 'Actual'
+        elif mode == ArduinoCommands.REQUIRED_HEADING_COMMAND_TYPE:
+            readable_mode = 'Required'
+        else:
+            readable_mode = 'Unknown mode'
+        message = '%s heading %s confirmed' % (readable_mode, heading)
+        self.logger.debug(message)
+
+    def __handle_location(self, payload):
+        lat, lon = struct.unpack("!ff", payload)
+        self.logger.error('Location %.6f %.6f confirmed' % (lat, lon))
 
     @property
     def serial_module(self) -> SerialProvider:

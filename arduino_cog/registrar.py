@@ -26,4 +26,4 @@ baud_rate: 9600
             self._write_external_modules()
         self._create_config(self.CONFIG_FILE_NAME, self.CONFIG_TEMPLATE)
         self._print_info('Registering serial_cog:')
-        return serial_cog.registrar.Registrar(serial_cog.registrar.Registrar.NAME).register()
+        return serial_cog.registrar.Registrar().register()
