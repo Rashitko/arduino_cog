@@ -15,4 +15,8 @@ setup(
     author_email='michal.raska@gmail.com',
     description='',
     install_requires=['up', 'pyyaml', 'serial_cog>=0.1.4'],
+    package_data={
+        'arduino_cog': ['arduino_cog/registered_modules.yml']
+    }
+
 )
