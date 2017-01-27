@@ -47,6 +47,9 @@ class ArduinoModule(BaseStartedModule):
     def _execute_stop(self):
         pass
 
+    def load(self):
+        return True
+
     def send_altitude(self, altitude):
         data = struct.pack("h", altitude)
         self.serial_module.send_command(ArduinoCommands.ALTITUDE_COMMAND_TYPE, data)

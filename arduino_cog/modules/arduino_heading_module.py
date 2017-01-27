@@ -27,6 +27,9 @@ class ArduinoHeadingModule(BaseHeadingProvider):
         super()._on_actual_heading_changed(new_required_heading)
         self.arduino_module.send_heading(new_required_heading, HeadingCommand.SET_MODE_REQUIRED)
 
+    def load(self):
+        return True
+
     @property
     def arduino_module(self) -> ArduinoModule:
         return self.__arduino_module

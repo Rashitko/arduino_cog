@@ -22,6 +22,9 @@ class ArduinoLocationModule(BaseLocationProvider):
         super()._on_location_changed(lat, lon)
         self.arduino_module.send_location(lat, lon)
 
+    def load(self):
+        return True
+
     @property
     def arduino_module(self) -> ArduinoModule:
         return self.__arduino_module
