@@ -5,6 +5,7 @@ import yaml
 from serial_cog.modules.serial_module import SerialProvider
 from up.base_started_module import BaseStartedModule
 from up.commands.heading_command import HeadingCommand
+from up.providers.orientation_provider import BaseOrientationProvider
 from up.registrar import UpRegistrar
 
 from arduino_cog.registrar import Registrar
@@ -16,6 +17,7 @@ class ArduinoModule(BaseStartedModule):
     def __init__(self):
         super().__init__()
         self.__serial_module = None
+        self.__orientation_provider = None
         self._load_order = SerialProvider.LOAD_ORDER
 
     def _execute_initialization(self):
@@ -35,13 +37,20 @@ class ArduinoModule(BaseStartedModule):
             self.serial_module.add_handler(ArduinoCommands.REQUIRED_HEADING_COMMAND_TYPE, self.__handle_heading, 2,
                                            ArduinoCommands.REQUIRED_HEADING_COMMAND_TYPE)
             self.serial_module.add_handler(ArduinoCommands.LOCATION_COMMAND_TYPE, self.__handle_location, 8)
+            self.serial_module.add_handler(ArduinoCommands.ALTITUDE_COMMAND_TYPE, self.__handle_altitude, 2)
+            self.serial_module.add_handler(ArduinoCommands.ORIENTATION_COMMAND_TYPE, self.__handle_orientation, 12)
         else:
             self.logger.ciritcal('Port and baudrate not set, set them in %s' % Registrar.CONFIG_FILE_NAME)
 
+        self.__orientation_provider = self.up.get_module(BaseOrientationProvider.__name__)
+        if self.__orientation_provider is None:
+            self.logger.critical('OrientationProvider not available')
+            raise ValueError('OrientationProvider not available')
+
     def _execute_start(self):
-        if self.serial_module.started:
-            self.serial_module.send_command(ArduinoCommands.START_COMMAND_TYPE)
-            self.serial_module.send_command(ArduinoCommands.DISARM_COMMAND_TYPE)
+        # if self.serial_module.started:
+            # self.serial_module.send_command(ArduinoCommands.START_COMMAND_TYPE)
+            # self.serial_module.send_command(ArduinoCommands.DISARM_COMMAND_TYPE)
         return self.serial_module.started
 
     def _execute_stop(self):
@@ -100,11 +109,33 @@ class ArduinoModule(BaseStartedModule):
 
     def __handle_location(self, payload):
         lat, lon = struct.unpack("!ff", payload)
-        self.logger.error('Location %.6f %.6f confirmed' % (lat, lon))
+        self.logger.debug('Location %.6f %.6f confirmed' % (lat, lon))
+
+    def __handle_altitude(self, payload):
+        altitude, = struct.unpack("!h", payload)
+        self.logger.debug('Altitude %s confirmed' % altitude)
+
+    def __handle_orientation(self, payload):
+        yaw, pitch, roll = struct.unpack("!fff", payload)
+        self.__orientation_provider.yaw = yaw
+        self.__orientation_provider.pitch = pitch
+        self.__orientation_provider.roll = roll
+
+    @property
+    def telemetry_content(self):
+        return {
+            'arduino': {
+                'connected': self.connected
+            }
+        }
 
     @property
     def serial_module(self) -> SerialProvider:
         return self.__serial_module
+
+    @property
+    def connected(self):
+        return self.__serial_module.connected
 
 
 class ArduinoCommands:
@@ -117,3 +148,4 @@ class ArduinoCommands:
     LOCATION_COMMAND_TYPE = 'l'
     ACTUAL_HEADING_COMMAND_TYPE = 'b'
     REQUIRED_HEADING_COMMAND_TYPE = 'B'
+    ORIENTATION_COMMAND_TYPE = 'o'
