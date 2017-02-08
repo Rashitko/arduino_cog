@@ -2,6 +2,7 @@ import os
 import struct
 
 import yaml
+from arduino_cog.commands.arduino_panic_command import ArduinoPanicCommand, ArduinoPanicCommandHandler
 from serial_cog.modules.serial_module import SerialProvider
 from up.base_started_module import BaseStartedModule
 from up.commands.heading_command import HeadingCommand
@@ -18,6 +19,7 @@ class ArduinoModule(BaseStartedModule):
         super().__init__()
         self.__serial_module = None
         self.__orientation_provider = None
+        self.__panic_handle = None
         self._load_order = SerialProvider.LOAD_ORDER
 
     def _execute_initialization(self):
@@ -48,13 +50,14 @@ class ArduinoModule(BaseStartedModule):
             raise ValueError('OrientationProvider not available')
 
     def _execute_start(self):
-        # if self.serial_module.started:
-            # self.serial_module.send_command(ArduinoCommands.START_COMMAND_TYPE)
-            # self.serial_module.send_command(ArduinoCommands.DISARM_COMMAND_TYPE)
+        super()._execute_start()
+        self.__panic_handle = self.up.command_executor.register_command(ArduinoPanicCommand.NAME, ArduinoPanicCommandHandler(self))
         return self.serial_module.started
 
     def _execute_stop(self):
-        pass
+        super()._execute_start()
+        if self.__panic_handle is not None:
+            self.up.command_executor.unregister_command(ArduinoPanicCommand.NAME, self.__panic_handle)
 
     def load(self):
         return True
@@ -74,6 +77,15 @@ class ArduinoModule(BaseStartedModule):
     def send_location(self, lat, lon):
         data = struct.pack("!ff", lat, lon)
         self.serial_module.send_command(ArduinoCommands.LOCATION_COMMAND_TYPE, data)
+
+    def send_panic(self, in_panic):
+        data = struct.pack("!b", in_panic)
+        if in_panic:
+            self.logger.warning('Sending PANIC ENTER to Arduino')
+        else:
+            self.logger.info('Sending PANIC LEAVE to Arduino')
+        # TODO: uncomment once arduino is ready to receive panic command
+        # self.serial_module.send_command(ArduinoCommands.PANIC_COMMAND_TYPE, data)
 
     @staticmethod
     def __read_config():
@@ -149,3 +161,4 @@ class ArduinoCommands:
     ACTUAL_HEADING_COMMAND_TYPE = 'b'
     REQUIRED_HEADING_COMMAND_TYPE = 'B'
     ORIENTATION_COMMAND_TYPE = 'o'
+    PANIC_COMMAND_TYPE = 'p'

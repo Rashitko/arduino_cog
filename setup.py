@@ -1,13 +1,9 @@
-import os
-
-import yaml
 from setuptools import setup
-from setuptools.command.install import install
 
 setup(
     name='arduino_cog',
     version='0.1.3',
-    packages=['arduino_cog', 'arduino_cog.modules'],
+    packages=['arduino_cog', 'arduino_cog.modules', 'arduino_cog.commands'],
     url='https://github.com/Rashitko/arduino_cog',
     download_url='https://github.com/Rashitko/arduino_cog/master/tarball/',
     license='MIT',
