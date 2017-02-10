@@ -18,9 +18,10 @@ class ArduinoLocationModule(BaseLocationProvider):
             raise ValueError("Arduino Module not found")
         return self.__arduino_module.started
 
-    def _on_location_changed(self, lat, lon):
-        super()._on_location_changed(lat, lon)
-        self.arduino_module.send_location(lat, lon)
+    def _on_location_changed(self):
+        super()._on_location_changed()
+        if self.started:
+            self.arduino_module.send_location(self.latitude, self.longitude)
 
     def load(self):
         return True
@@ -28,4 +29,3 @@ class ArduinoLocationModule(BaseLocationProvider):
     @property
     def arduino_module(self) -> ArduinoModule:
         return self.__arduino_module
-

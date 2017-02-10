@@ -21,7 +21,8 @@ class ArduinoAltitudeModule(BaseAltitudeProvider):
 
     def _on_altitude_changed(self, new_altitude):
         super()._on_altitude_changed(new_altitude)
-        self.arduino_module.send_altitude(new_altitude)
+        if self.started:
+            self.arduino_module.send_altitude(new_altitude)
 
     def load(self):
         return True
