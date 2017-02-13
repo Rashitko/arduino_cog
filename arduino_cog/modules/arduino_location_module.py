@@ -12,7 +12,7 @@ class ArduinoLocationModule(BaseLocationProvider):
 
     def _execute_start(self):
         super()._execute_start()
-        self.__arduino_module = self.up.get_module(ArduinoModule.__name__)
+        self.__arduino_module = self.up.get_module(ArduinoModule)
         if self.arduino_module is None:
             self.logger.critical("Arduino Module not found")
             raise ValueError("Arduino Module not found")

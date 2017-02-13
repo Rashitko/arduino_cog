@@ -6,7 +6,7 @@ from arduino_cog.commands.arduino_panic_command import ArduinoPanicCommand, Ardu
 from serial_cog.modules.serial_module import SerialProvider
 from up.base_started_module import BaseStartedModule
 from up.commands.heading_command import HeadingCommand
-from up.providers.orientation_provider import BaseOrientationProvider
+from up.modules.base_orientation_provider import BaseOrientationProvider
 from up.registrar import UpRegistrar
 
 from arduino_cog.registrar import Registrar
@@ -23,7 +23,7 @@ class ArduinoModule(BaseStartedModule):
         self._load_order = SerialProvider.LOAD_ORDER
 
     def _execute_initialization(self):
-        self.__serial_module = self.up.get_module(SerialProvider.__name__)
+        self.__serial_module = self.up.get_module(SerialProvider)
         if self.__serial_module is None:
             self.logger.critical('SerialProvider not available')
             raise ValueError('SerialProvider not available')
@@ -44,7 +44,7 @@ class ArduinoModule(BaseStartedModule):
         else:
             self.logger.ciritcal('Port and baudrate not set, set them in %s' % Registrar.CONFIG_FILE_NAME)
 
-        self.__orientation_provider = self.up.get_module(BaseOrientationProvider.__name__)
+        self.__orientation_provider = self.up.get_module(BaseOrientationProvider)
         if self.__orientation_provider is None:
             self.logger.critical('OrientationProvider not available')
             raise ValueError('OrientationProvider not available')
