@@ -2,18 +2,21 @@ import os
 import struct
 
 import yaml
-from arduino_cog.commands.arduino_panic_command import ArduinoPanicCommand, ArduinoPanicCommandHandler
 from serial_cog.modules.serial_module import SerialProvider
 from up.base_started_module import BaseStartedModule
 from up.commands.heading_command import HeadingCommand
 from up.modules.base_orientation_provider import BaseOrientationProvider
 from up.registrar import UpRegistrar
 
+from arduino_cog.commands.arduino_panic_command import ArduinoPanicCommand, ArduinoPanicCommandHandler
 from arduino_cog.registrar import Registrar
 
 
 class ArduinoModule(BaseStartedModule):
     LOAD_ORDER = SerialProvider.LOAD_ORDER + 1
+
+    PANIC_DELAY = 150
+    NORMAL_DELAY = 50
 
     def __init__(self):
         super().__init__()
@@ -31,6 +34,7 @@ class ArduinoModule(BaseStartedModule):
         if port is not None and baudrate is not None:
             self.__serial_module.port = port
             self.__serial_module.baud_rate = baudrate
+            self.serial_module.add_handler(ArduinoCommands.ERROR_COMMAND_TYPE, self.__handle_error, 1)
             self.serial_module.add_handler(ArduinoCommands.START_COMMAND_TYPE, self.__handle_start)
             self.serial_module.add_handler(ArduinoCommands.ARM_COMMAND_TYPE, self.__handle_arming_changed, 0, True)
             self.serial_module.add_handler(ArduinoCommands.DISARM_COMMAND_TYPE, self.__handle_arming_changed, 0, False)
@@ -41,6 +45,7 @@ class ArduinoModule(BaseStartedModule):
             self.serial_module.add_handler(ArduinoCommands.LOCATION_COMMAND_TYPE, self.__handle_location, 8)
             self.serial_module.add_handler(ArduinoCommands.ALTITUDE_COMMAND_TYPE, self.__handle_altitude, 2)
             self.serial_module.add_handler(ArduinoCommands.ORIENTATION_COMMAND_TYPE, self.__handle_orientation, 12)
+            self.serial_module.add_handler(ArduinoCommands.PANIC_COMMAND_TYPE, self.__handle_panic, 3)
         else:
             self.logger.ciritcal('Port and baudrate not set, set them in %s' % Registrar.CONFIG_FILE_NAME)
 
@@ -51,7 +56,8 @@ class ArduinoModule(BaseStartedModule):
 
     def _execute_start(self):
         super()._execute_start()
-        self.__panic_handle = self.up.command_executor.register_command(ArduinoPanicCommand.NAME, ArduinoPanicCommandHandler(self))
+        self.__panic_handle = self.up.command_executor.register_command(ArduinoPanicCommand.NAME,
+                                                                        ArduinoPanicCommandHandler(self))
         return self.serial_module.started
 
     def _execute_stop(self):
@@ -79,13 +85,15 @@ class ArduinoModule(BaseStartedModule):
         self.serial_module.send_command(ArduinoCommands.LOCATION_COMMAND_TYPE, data)
 
     def send_panic(self, in_panic):
-        data = struct.pack("!b", in_panic)
         if in_panic:
+            required_delay = self.PANIC_DELAY
             self.logger.warning('Sending PANIC ENTER to Arduino')
         else:
+            required_delay = self.NORMAL_DELAY
             self.logger.info('Sending PANIC LEAVE to Arduino')
-        # TODO: uncomment once arduino is ready to receive panic command
-        # self.serial_module.send_command(ArduinoCommands.PANIC_COMMAND_TYPE, data)
+
+        data = struct.pack("!?h", in_panic, required_delay)
+        self.serial_module.send_command(ArduinoCommands.PANIC_COMMAND_TYPE, data)
 
     @staticmethod
     def __read_config():
@@ -133,6 +141,14 @@ class ArduinoModule(BaseStartedModule):
         self.__orientation_provider.pitch = pitch
         self.__orientation_provider.roll = roll
 
+    def __handle_error(self, payload):
+        rejected, = struct.unpack("!c", payload)
+        self.logger.error("Arduino rejected command %s" % rejected)
+
+    def __handle_panic(self, payload):
+        in_panic, delay = struct.unpack("!?h", payload)
+        self.logger.debug("Arduino confirmed PANIC DELAY of %sms" % delay)
+
     @property
     def telemetry_content(self):
         return {
@@ -151,6 +167,7 @@ class ArduinoModule(BaseStartedModule):
 
 
 class ArduinoCommands:
+    ERROR_COMMAND_TYPE = '!'
     DISARM_COMMAND_TYPE = 'd'
     ARM_COMMAND_TYPE = 'a'
     START_COMMAND_TYPE = 's'
