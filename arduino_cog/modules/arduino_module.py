@@ -95,6 +95,20 @@ class ArduinoModule(BaseStartedModule):
         data = struct.pack("!?h", in_panic, required_delay)
         self.serial_module.send_command(ArduinoCommands.PANIC_COMMAND_TYPE, data)
 
+    def send_pids(self, pids):
+        # TODO
+        if self.started:
+            self.logger.info("Sending PIDs: %s" % format(pids))
+        else:
+            self.logger.error("Not started, cannot send PIDs")
+
+    def request_pids(self):
+        # TODO
+        if self.started:
+            self.logger.info("Requesting PIDs")
+        else:
+            self.logger.error("Not started, cannot request PIDs")
+
     @staticmethod
     def __read_config():
         config_path = os.path.join(os.getcwd(), UpRegistrar.CONFIG_PATH, Registrar.CONFIG_FILE_NAME)
