@@ -11,6 +11,27 @@ class Registrar(UpRegistrar):
 port: # Place your port here
 baud_rate: 9600
 """
+    PIDS_CONFIG_FILE_NAME = 'pids.yml'
+    PIDS_CONFIG_TEMPLATE = """\
+rate:
+  ailerons:
+    p: 0.7
+    i: 0
+    d: 0
+  elevator:
+    p: 0.7
+    i: 0
+    d: 0
+stabilize:
+  ailerons:
+    p: 4.5
+    i: 0
+    d: 0
+  elevator:
+    p: 4.5
+    i: 0
+    d: 0
+    """
 
     def __init__(self):
         super().__init__('arduino_cog')
@@ -20,6 +41,7 @@ baud_rate: 9600
         if external_modules is not None:
             self._register_modules_from_file()
             self._create_config(self.CONFIG_FILE_NAME, self.CONFIG_TEMPLATE)
+            self._create_config(self.PIDS_CONFIG_FILE_NAME, self.PIDS_CONFIG_TEMPLATE)
             self._print_info('Registering serial_cog:')
             return serial_cog.registrar.Registrar().register()
         return False
