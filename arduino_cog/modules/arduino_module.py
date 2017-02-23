@@ -9,7 +9,7 @@ from up.modules.base_orientation_provider import BaseOrientationProvider
 from up.registrar import UpRegistrar
 
 from arduino_cog.commands.arduino_panic_command import ArduinoPanicCommand, ArduinoPanicCommandHandler
-from arduino_cog.commands.pid_tunings_command import PIDTuningsCommand
+from arduino_cog.commands.pid_tunings_command import PIDTuningsCommand, PIDTuningsValuesCommandFactory
 from arduino_cog.registrar import Registrar
 
 
@@ -187,6 +187,8 @@ class ArduinoModule(BaseStartedModule):
         pids = [round(x, 2) for x in pids]
         if is_request:
             self.logger.info("PIDs settings: %s" % pids)
+            cmd = PIDTuningsValuesCommandFactory.create(pids)
+            self.up.mission_control_provider.send_command(cmd)
         else:
             self.logger.debug("Arduino confirmed PIDs: %s" % pids)
 

@@ -22,6 +22,46 @@ class PIDTuningsCommand(BaseCommand):
         super().__init__(self.NAME)
 
 
+class PIDTuningsValuesCommand(BaseCommand):
+    NAME = "arduino.pids.values"
+
+    def __init__(self):
+        super().__init__(self.NAME)
+
+
+class PIDTuningsValuesCommandFactory:
+    @staticmethod
+    def create(pids):
+        cmd = PIDTuningsValuesCommand()
+        cmd.data = {
+            PIDTuningsCommand.RATE_PIDS_KEY: {
+                PIDTuningsCommand.AILERONS_KEY: {
+                    PIDTuningsCommand.P_KEY: pids[0],
+                    PIDTuningsCommand.I_KEY: pids[1],
+                    PIDTuningsCommand.D_KEY: pids[2]
+                },
+                PIDTuningsCommand.ELEVATOR_KEY: {
+                    PIDTuningsCommand.P_KEY: pids[3],
+                    PIDTuningsCommand.I_KEY: pids[4],
+                    PIDTuningsCommand.D_KEY: pids[5]
+                }
+            },
+            PIDTuningsCommand.STAB_PIDS_KEY: {
+                PIDTuningsCommand.AILERONS_KEY: {
+                    PIDTuningsCommand.P_KEY: pids[6],
+                    PIDTuningsCommand.I_KEY: pids[7],
+                    PIDTuningsCommand.D_KEY: pids[8]
+                },
+                PIDTuningsCommand.ELEVATOR_KEY: {
+                    PIDTuningsCommand.P_KEY: pids[9],
+                    PIDTuningsCommand.I_KEY: pids[10],
+                    PIDTuningsCommand.D_KEY: pids[11]
+                }
+            }
+        }
+        return cmd
+
+
 class PIDTuningsCommandHandler(BaseCommandHandler):
     def __init__(self, provider):
         super().__init__()
