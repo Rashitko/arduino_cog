@@ -4,7 +4,6 @@ import yaml
 from up.base_started_module import BaseStartedModule
 from up.registrar import UpRegistrar
 
-
 from arduino_cog.commands.pid_tunings_command import PIDTuningsCommand, PIDTuningsCommandHandler
 from arduino_cog.modules.arduino_module import ArduinoModule
 from arduino_cog.registrar import Registrar
@@ -38,6 +37,7 @@ class PIDTuningsProvider(BaseStartedModule):
         super()._execute_stop()
         if self.__pid_tunings_handler:
             self.up.command_executor.unregister_command(PIDTuningsCommand.NAME, self.__pid_tunings_handler)
+        self.__save_pids()
 
     def on_pids_requested(self):
         self.__arduino_module.request_pids()
@@ -57,6 +57,16 @@ class PIDTuningsProvider(BaseStartedModule):
                     PIDTuningsCommand.RATE_PIDS_KEY: config.get('rate'),
                     PIDTuningsCommand.STAB_PIDS_KEY: config.get('stabilize')
                 }
+
+    def __save_pids(self):
+        config_path = os.path.join(os.getcwd(), UpRegistrar.CONFIG_PATH, Registrar.PIDS_CONFIG_FILE_NAME)
+        with open(config_path, 'w+') as f:
+            pids = {
+                'rate': self.pids[PIDTuningsCommand.RATE_PIDS_KEY],
+                'stabilize': self.pids[PIDTuningsCommand.STAB_PIDS_KEY]
+            }
+            self.logger.debug("Saving pids to pids.yml")
+            yaml.dump(pids, f)
 
     @property
     def pids(self):
