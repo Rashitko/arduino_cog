@@ -7,6 +7,17 @@ class PIDTuningsCommand(BaseCommand):
     REQUEST_KEY = 'request'
     PIDS_KEY = 'pids'
 
+    NAV_PIDS_KEY = 'navPIDs'
+    STAB_PIDS_KEY = 'stabPIDs'
+    RATE_PIDS_KEY = 'ratePIDs'
+
+    AILERONS_KEY = 'ailerons'
+    ELEVATOR_KEY = 'elevator'
+
+    P_KEY = 'p'
+    I_KEY = 'i'
+    D_KEY = 'd'
+
     def __init__(self):
         super().__init__(self.NAME)
 

@@ -5,7 +5,6 @@ from arduino_cog.modules.arduino_module import ArduinoModule
 
 
 class PIDTuningsProvider(BaseStartedModule):
-
     LOAD_ORDER = ArduinoModule.LOAD_ORDER + 1
 
     def __init__(self):
@@ -36,6 +35,9 @@ class PIDTuningsProvider(BaseStartedModule):
     def on_pids_requested(self):
         self.__arduino_module.request_pids()
 
+    def _on_pids_changed(self):
+        self.__arduino_module.send_pids(self.pids)
+
     def load(self):
         return True
 
@@ -45,10 +47,10 @@ class PIDTuningsProvider(BaseStartedModule):
 
     @pids.setter
     def pids(self, value):
-        self.rate_pids = value['ratePIDs']
-        self.stab_pids = value['stabPIDs']
-        self.nav_pids = value['navPIDs']
-        self.__arduino_module.send_pids(self.pids)
+        self.rate_pids = value[PIDTuningsCommand.RATE_PIDS_KEY]
+        self.stab_pids = value[PIDTuningsCommand.STAB_PIDS_KEY]
+        self.nav_pids = value[PIDTuningsCommand.NAV_PIDS_KEY]
+        self._on_pids_changed()
 
     @property
     def rate_pids(self):

@@ -9,6 +9,7 @@ from up.modules.base_orientation_provider import BaseOrientationProvider
 from up.registrar import UpRegistrar
 
 from arduino_cog.commands.arduino_panic_command import ArduinoPanicCommand, ArduinoPanicCommandHandler
+from arduino_cog.commands.pid_tunings_command import PIDTuningsCommand
 from arduino_cog.registrar import Registrar
 
 
@@ -46,6 +47,8 @@ class ArduinoModule(BaseStartedModule):
             self.serial_module.add_handler(ArduinoCommands.ALTITUDE_COMMAND_TYPE, self.__handle_altitude, 2)
             self.serial_module.add_handler(ArduinoCommands.ORIENTATION_COMMAND_TYPE, self.__handle_orientation, 12)
             self.serial_module.add_handler(ArduinoCommands.PANIC_COMMAND_TYPE, self.__handle_panic, 3)
+            self.serial_module.add_handler(ArduinoCommands.PID_TUNINGS, self.__handle_pid_tunings, 48, False)
+            self.serial_module.add_handler(ArduinoCommands.PID_TUNINGS_REQUEST, self.__handle_pid_tunings, 48, True)
         else:
             self.logger.ciritcal('Port and baudrate not set, set them in %s' % Registrar.CONFIG_FILE_NAME)
 
@@ -91,21 +94,37 @@ class ArduinoModule(BaseStartedModule):
         else:
             required_delay = self.NORMAL_DELAY
             self.logger.info('Sending PANIC LEAVE to Arduino')
-
         data = struct.pack("!?h", in_panic, required_delay)
         self.serial_module.send_command(ArduinoCommands.PANIC_COMMAND_TYPE, data)
 
     def send_pids(self, pids):
-        # TODO
+        data = []
+        rate_pids = pids.get(PIDTuningsCommand.RATE_PIDS_KEY)
+        if rate_pids:
+            data.append(rate_pids[PIDTuningsCommand.AILERONS_KEY][PIDTuningsCommand.P_KEY])
+            data.append(rate_pids[PIDTuningsCommand.AILERONS_KEY][PIDTuningsCommand.I_KEY])
+            data.append(rate_pids[PIDTuningsCommand.AILERONS_KEY][PIDTuningsCommand.D_KEY])
+            data.append(rate_pids[PIDTuningsCommand.ELEVATOR_KEY][PIDTuningsCommand.P_KEY])
+            data.append(rate_pids[PIDTuningsCommand.ELEVATOR_KEY][PIDTuningsCommand.I_KEY])
+            data.append(rate_pids[PIDTuningsCommand.ELEVATOR_KEY][PIDTuningsCommand.D_KEY])
+        stab_pids = pids.get(PIDTuningsCommand.STAB_PIDS_KEY)
+        if stab_pids:
+            data.append(stab_pids[PIDTuningsCommand.AILERONS_KEY][PIDTuningsCommand.P_KEY])
+            data.append(stab_pids[PIDTuningsCommand.AILERONS_KEY][PIDTuningsCommand.I_KEY])
+            data.append(stab_pids[PIDTuningsCommand.AILERONS_KEY][PIDTuningsCommand.D_KEY])
+            data.append(stab_pids[PIDTuningsCommand.ELEVATOR_KEY][PIDTuningsCommand.P_KEY])
+            data.append(stab_pids[PIDTuningsCommand.ELEVATOR_KEY][PIDTuningsCommand.I_KEY])
+            data.append(stab_pids[PIDTuningsCommand.ELEVATOR_KEY][PIDTuningsCommand.D_KEY])
         if self.started:
-            self.logger.info("Sending PIDs: %s" % format(pids))
+            self.logger.info("Sending PIDs: %s" % data)
+            self.serial_module.send_command(ArduinoCommands.PID_TUNINGS, struct.pack("!ffffffffffff", *data))
         else:
             self.logger.error("Not started, cannot send PIDs")
 
     def request_pids(self):
-        # TODO
         if self.started:
             self.logger.info("Requesting PIDs")
+            self.serial_module.send_command(ArduinoCommands.PID_TUNINGS_REQUEST)
         else:
             self.logger.error("Not started, cannot request PIDs")
 
@@ -163,6 +182,14 @@ class ArduinoModule(BaseStartedModule):
         in_panic, delay = struct.unpack("!?h", payload)
         self.logger.debug("Arduino confirmed PANIC DELAY of %sms" % delay)
 
+    def __handle_pid_tunings(self, payload, is_request):
+        pids = list(struct.unpack("!ffffffffffff", payload))
+        pids = [round(x, 2) for x in pids]
+        if is_request:
+            self.logger.info("PIDs settings: %s" % pids)
+        else:
+            self.logger.debug("Arduino confirmed PIDs: %s" % pids)
+
     @property
     def telemetry_content(self):
         return {
@@ -193,3 +220,5 @@ class ArduinoCommands:
     REQUIRED_HEADING_COMMAND_TYPE = 'B'
     ORIENTATION_COMMAND_TYPE = 'o'
     PANIC_COMMAND_TYPE = 'p'
+    PID_TUNINGS = 't'
+    PID_TUNINGS_REQUEST = 'T'
