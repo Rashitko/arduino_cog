@@ -50,6 +50,7 @@ class ArduinoModule(BaseStartedModule):
             self.serial_module.add_handler(ArduinoCommands.PANIC_COMMAND_TYPE, self.__handle_panic, 3)
             self.serial_module.add_handler(ArduinoCommands.PID_TUNINGS, self.__handle_pid_tunings, 48, False)
             self.serial_module.add_handler(ArduinoCommands.PID_TUNINGS_REQUEST, self.__handle_pid_tunings, 48, True)
+            self.serial_module.add_handler(ArduinoCommands.RX_VALUES, self.__handle_rx_values, 8)
         else:
             self.logger.ciritcal('Port and baudrate not set, set them in %s' % Registrar.CONFIG_FILE_NAME)
 
@@ -198,6 +199,10 @@ class ArduinoModule(BaseStartedModule):
         else:
             self.logger.debug("Arduino confirmed PIDs: %s" % pids)
 
+    def __handle_rx_values(self, payload):
+        ail, ele, thr, rud = struct.unpack("!hhhh", payload)
+        self.__rx_provider.set_channels(self.__rx_provider.create_channels_values(ail, ele, thr, rud))
+
     @property
     def telemetry_content(self):
         return {
@@ -230,3 +235,4 @@ class ArduinoCommands:
     PANIC_COMMAND_TYPE = 'p'
     PID_TUNINGS = 't'
     PID_TUNINGS_REQUEST = 'T'
+    RX_VALUES = 'r'
