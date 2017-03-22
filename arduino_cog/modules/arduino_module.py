@@ -6,6 +6,7 @@ from serial_cog.modules.serial_module import SerialProvider
 from up.base_started_module import BaseStartedModule
 from up.commands.heading_command import HeadingCommand
 from up.modules.base_orientation_provider import BaseOrientationProvider
+from up.providers.base_rx_provider import BaseRXProvider
 from up.registrar import UpRegistrar
 
 from arduino_cog.commands.arduino_panic_command import ArduinoPanicCommand, ArduinoPanicCommandHandler
@@ -56,6 +57,11 @@ class ArduinoModule(BaseStartedModule):
         if self.__orientation_provider is None:
             self.logger.critical('OrientationProvider not available')
             raise ValueError('OrientationProvider not available')
+
+        self.__rx_provider = self.up.get_module(BaseRXProvider)
+        if self.__rx_provider is None:
+            self.logger.critical('RXProvider not available')
+            raise ValueError('RXProvider not available')
 
     def _execute_start(self):
         super()._execute_start()
