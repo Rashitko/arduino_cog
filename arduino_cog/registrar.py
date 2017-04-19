@@ -15,20 +15,20 @@ baud_rate: 9600
     PIDS_CONFIG_TEMPLATE = """\
 rate:
   ailerons:
-    p: 0.7
+    p: 6
     i: 0
     d: 0
   elevator:
-    p: 0.7
+    p: 6
     i: 0
     d: 0
 stabilize:
   ailerons:
-    p: 4.5
+    p: 0.7
     i: 0
     d: 0
   elevator:
-    p: 4.5
+    p: 0.7
     i: 0
     d: 0
     """

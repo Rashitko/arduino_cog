@@ -52,7 +52,7 @@ class ArduinoModule(BaseStartedModule):
             self.serial_module.add_handler(ArduinoCommands.PID_TUNINGS_REQUEST, self.__handle_pid_tunings, 48, True)
             self.serial_module.add_handler(ArduinoCommands.RX_VALUES, self.__handle_rx_values, 8)
         else:
-            self.logger.ciritcal('Port and baudrate not set, set them in %s' % Registrar.CONFIG_FILE_NAME)
+            self.logger.critical('Port and baudrate not set, set them in %s' % Registrar.CONFIG_FILE_NAME)
 
         self.__orientation_provider = self.up.get_module(UpOrientationProvider)
         if self.__orientation_provider is None:
