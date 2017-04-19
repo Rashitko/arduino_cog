@@ -1,4 +1,4 @@
-import serial_cog.registrar
+import serial_provider_cog.registrar
 from up.registrar import UpRegistrar
 
 
@@ -43,5 +43,5 @@ stabilize:
             self._create_config(self.CONFIG_FILE_NAME, self.CONFIG_TEMPLATE)
             self._create_config(self.PIDS_CONFIG_FILE_NAME, self.PIDS_CONFIG_TEMPLATE)
             self._print_info('Registering serial_cog:')
-            return serial_cog.registrar.Registrar().register()
+            return serial_provider_cog.registrar.Registrar().register()
         return False
