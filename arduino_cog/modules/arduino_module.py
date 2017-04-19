@@ -2,7 +2,7 @@ import os
 import struct
 
 import yaml
-from serial_cog.modules.serial_module import SerialProvider
+from serial_provider_cog.modules.serial_module import SerialProvider
 from up.base_started_module import BaseStartedModule
 from up.commands.heading_command import HeadingCommand
 from up.modules.up_orientation_provider import UpOrientationProvider
