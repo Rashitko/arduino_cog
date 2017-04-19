@@ -11,6 +11,7 @@ setup(
     author_email='michal.raska@gmail.com',
     description='',
     install_requires=['up', 'pyyaml', 'serial_provider_cog>=0.1.4'],
+    dependency_links=['https://github.com/Rashitko/serial_provider_cog/tarball/master#egg=serial_provider_cog-0.1.4'],
     package_data={
         'arduino_cog': ['registered_modules.yml']
     }
