@@ -1,9 +1,9 @@
-from up.modules.base_altitude_provider import BaseAltitudeProvider
+from up.modules.up_altitude_provider import UpAltitudeProvider
 
 from arduino_cog.modules.arduino_module import ArduinoModule
 
 
-class ArduinoAltitudeModule(BaseAltitudeProvider):
+class ArduinoAltitudeModule(UpAltitudeProvider):
     LOAD_ORDER = ArduinoModule.LOAD_ORDER + 1
 
     def __init__(self):

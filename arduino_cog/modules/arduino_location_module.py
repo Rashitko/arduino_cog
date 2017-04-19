@@ -1,9 +1,9 @@
-from up.modules.base_location_provider import BaseLocationProvider
+from up.modules.up_location_provider import UpLocationProvider
 
 from arduino_cog.modules.arduino_module import ArduinoModule
 
 
-class ArduinoLocationModule(BaseLocationProvider):
+class ArduinoLocationModule(UpLocationProvider):
     LOAD_ORDER = ArduinoModule.LOAD_ORDER + 1
 
     def __init__(self):

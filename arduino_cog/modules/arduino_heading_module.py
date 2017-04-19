@@ -1,10 +1,10 @@
 from up.commands.heading_command import HeadingCommand
-from up.modules.base_heading_provider import BaseHeadingProvider
+from up.modules.up_heading_provider import UpHeadingProvider
 
 from arduino_cog.modules.arduino_module import ArduinoModule
 
 
-class ArduinoHeadingModule(BaseHeadingProvider):
+class ArduinoHeadingModule(UpHeadingProvider):
     LOAD_ORDER = ArduinoModule.LOAD_ORDER + 1
 
     def __init__(self):

@@ -5,7 +5,7 @@ import yaml
 from serial_cog.modules.serial_module import SerialProvider
 from up.base_started_module import BaseStartedModule
 from up.commands.heading_command import HeadingCommand
-from up.modules.base_orientation_provider import BaseOrientationProvider
+from up.modules.up_orientation_provider import UpOrientationProvider
 from up.providers.base_rx_provider import BaseRXProvider
 from up.registrar import UpRegistrar
 
@@ -54,7 +54,7 @@ class ArduinoModule(BaseStartedModule):
         else:
             self.logger.ciritcal('Port and baudrate not set, set them in %s' % Registrar.CONFIG_FILE_NAME)
 
-        self.__orientation_provider = self.up.get_module(BaseOrientationProvider)
+        self.__orientation_provider = self.up.get_module(UpOrientationProvider)
         if self.__orientation_provider is None:
             self.logger.critical('OrientationProvider not available')
             raise ValueError('OrientationProvider not available')
